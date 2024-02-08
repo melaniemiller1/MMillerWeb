@@ -1,0 +1,127 @@
+---
+title: '<center>Simple Linear Regression on California Housing Price Data</center>'
+author: "Melanie MIller"
+date: '<img src="mainLogo.png" width=100 length=100><br><br> West Chester University'
+output: 
+  slidy_presentation:
+       font_adjustment: +1
+       footer: 'Slidy presentation created using RMarkdown (modified from the default template for STA553 Data Visualization)'
+       widescreen: yes
+       self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## California Housing Price Data
+
+<div align="center">
+<table border = 0 width="60%">
+<tr>
+<td> 
+- Data Information
+  - The California Housing Price Data was collected from the 1990 Census and collected information on all the block groups in       California.
+  - All block groups that reported 0 entries were excluded from the data set. 
+  - This data set consists of 20,640 observations and 9 variables. 
+  - The median house value will be used as the dependent variable.
+  - Data Source: Kaggle.com
+
+</td>
+</tr>
+</table>
+</div>
+
+```{r echo=TRUE, include=FALSE}
+setwd("C:/Users/mille/Documents/WCU Grad School 2022-2024/WCU Grad Spring 2024/STA 533 Data Visualization/MMillerWeb/w02-HW")
+library(data.table)
+library(tidyverse)
+library(ggplot2)
+data1 <- fread("ca-housing-price.csv")
+
+logMHV<-log(data1$median_house_value)
+data2<-cbind(data1, logMHV)
+```
+
+## Statistical Methods
+
+- A simple linear regression will be performed on this data set, specifically focusing on the dependent variable, median house    value, and its relationship with median income.
+- This analysis will consist of plotting the variables, analysis of descriptive statistics and correlation, and simple linear     regression.
+- The following table shows a preview of the data set used:
+
+```{r eval=requireNamespace("DT", quietly=TRUE)}
+DT::datatable(head(data1), fillContainer = FALSE, options = list(pageLength = 4))
+```
+
+
+## Descriptive Statistics
+- The following shows the descriptive statistics of the median house value.
+
+```{r}
+data1 %>%
+    summarize(total=n(),
+              average=mean(median_house_value),
+              minimum=min(median_house_value),
+              maximum=max(median_house_value),
+              standard.dev=sd(median_house_value))
+
+```
+
+
+## Plot of the Data: Histogram of Median House Value
+- The histogram shows the distribution of median house value appears to be right skewed, however transforming this variable does    not significantly improve the distribution, therefore proceed analysis of the results with caution.
+
+```{r}
+hist(data1$median_house_value,
+     main="Median House Value Distribution",
+     xlab="Median House Value")
+
+
+```
+
+
+
+
+## Scatterplot
+- The following scatterplot shows the relationship between median income and median house value. The regression line emphasizes the positive linear relationship between the two variables. 
+
+```{r}
+ggplot(data1, aes(x=median_income, y=median_house_value)) + 
+    geom_point()+
+   geom_smooth(method = "lm", se = FALSE) +
+  labs(x="Median Income",
+       y="Median House Value")
+
+```
+
+## Correlation
+```{r}
+cor(data1$median_income, data1$median_house_value)
+
+```
+- There is a positive linear relationship between median income and median house value, with a correlation value of 0.69.
+
+
+## Simple Linear Regression
+```{r}
+reg<-lm(data1$median_house_value ~ data1$median_income)
+ summary(reg)
+
+```
+- For every unit increase in median income, we expect the median house value to increase by 41793.8.
+- There is a significant linear relationship between median income and median house value as indicated at the 0.05 significance     level.
+- ȳ = 45085.6 + 41793.8X
+
+
+
+
+## Conclusion
+
+- After only looking at the two variables, median house value and median income, it is clear there is a positive linear relationship between the two. As median income increases, the median house value tens to increase as well. 
+- With an r-squares value of 0.43, only 43% of the variance for median house value is explained by median income, therefore taking a look at additional independent variables may improve this model.
+
+
+
+
+
+
